@@ -37,6 +37,7 @@ export const updateDataById = async (id, body) => {
 			body: JSON.stringify(body),
 			headers: { 'Content-Type': 'application/json' }
 		});
+		console.log(URL_BASE + URL_API + id);
 		const data = await response.json();
 		return data;
 	} catch (error) {

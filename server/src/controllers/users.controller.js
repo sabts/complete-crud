@@ -46,16 +46,18 @@ usersController.updateDataById = async (req, res) => {
     if (!userExist) {
       return res.status(404).send("Usuario no encontrado");
     }
+    const updateData = data.map(user => {
+      if (user.userId === id)
+        return {
+          ...user,
+          ...updatedFields,
+        };
+    });
 
     const emailExists = data.some(user => user.email === req.body.email);
     if (emailExists) {
       return res.status(409).send("Este correo ya está registrado");
     }
-
-    data[userExist] = {
-      ...data[userExist],
-      ...updatedFields,
-    };
 
     await fs.writeFile(userFilePath, JSON.stringify(data));
 
