@@ -47,19 +47,19 @@ usersController.updateDataById = async (req, res) => {
       return res.status(404).send("Usuario no encontrado");
     }
 
-    const emailExists = users.some(user => user.email === email);
+    const emailExists = data.some(user => user.email === req.body.email);
     if (emailExists) {
       return res.status(409).send("Este correo ya está registrado");
     }
 
-    users[userExist] = {
-      ...users[userExist],
+    data[userExist] = {
+      ...data[userExist],
       ...updatedFields,
     };
 
-    await fs.writeFile(userFilePath, JSON.stringify(users));
+    await fs.writeFile(userFilePath, JSON.stringify(data));
 
-    res.json(users[userExist]);
+    res.json(data[userExist]);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error al actualizar el usuario");
