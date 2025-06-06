@@ -76,8 +76,8 @@ const updateUserData = async (setIsEditing, id, updatedFields) => {
 	return updatedUser;
 };
 
-const onSubmit = async (formData) => {
-	const updated = await updateUserData(setIsEditing, id, formData);
+const onSubmit = async (setIsEditing, id ) => {
+	const updated = await updateUserData(setIsEditing, id,);
 	setUser(updated);
 };
 

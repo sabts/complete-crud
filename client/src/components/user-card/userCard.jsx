@@ -1,4 +1,4 @@
-import { StyledDiv, StyledPicture } from './styles-user-card';
+import { StyledDiv, StyledPicture, StyledStatus } from './styles-user-card';
 
 const UserCard = ({ profilePicture, fullName, email, username, active }) => {
 	return (
@@ -8,7 +8,8 @@ const UserCard = ({ profilePicture, fullName, email, username, active }) => {
 				<h2>{fullName}</h2>
 				<span>{email}</span>
 				<span>@{username}</span>
-				<p>{active ? 'Active' : 'Inactive'}</p>
+				<StyledStatus $active={active}>
+				{active ? 'Active' : 'Inactive'}</StyledStatus>
 				<button>DETAILS</button>
 			</StyledDiv>
 		</>

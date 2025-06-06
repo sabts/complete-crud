@@ -61,7 +61,7 @@ usersController.updateDataById = async (req, res) => {
 
     await fs.writeFile(userFilePath, JSON.stringify(data));
 
-    res.json(data[userExist]);
+    res.json(userExist);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error al actualizar el usuario");
