@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router';
 import { StyledDiv, StyledMainContainer, StyledPicture } from './styled-user-profile';
 import { useEffect, useState } from 'react';
-import { getDataById, updateDataById } from '../../lib/utils/api';
+import { deleteDataById, getDataById, updateDataById } from '../../lib/utils/api';
 import { useForm } from 'react-hook-form';
 
 const UserProfile = () => {
@@ -52,7 +52,7 @@ const UserProfile = () => {
 			  <span>Phone Number: {user.phoneNumber}</span>
 			  <div>
 				<button onClick={() => setIsEditing(true)}>EDIT</button>
-				<button>DELETE</button>
+				<button onClick={()=> deleteUser(id, navigate)}>DELETE</button>
 			  </div>
 			</>
 		  ) : (
@@ -131,5 +131,10 @@ const UserProfile = () => {
 	setUser(updatedUser);
 	setIsEditing(false);
   };
+
+  const deleteUser = async (id, navigate) => {
+	await deleteDataById(id);
+	navigate('/')
+  }
 
 export default UserProfile;
