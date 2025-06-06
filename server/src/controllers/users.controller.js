@@ -37,29 +37,43 @@ usersController.getDataById = async (req, res) => {
 usersController.updateDataById = async (req, res) => {
   const { id } = req.params;
   const userInfo = req.body;
-
   fs.readFile(usersFile, (error, data) => {
-    if (error)
+    if (error) {
+      console.error("Error reading user file:", error);
       return res.status(500).json({ error: "Error reading user file" });
+    }
 
     if (!id || !userInfo) {
       return res.status(400).json({ error: "Bad Request: No ID or INFO" });
     }
 
-    const jsonUsers = JSON.parse(data);
-    const userToEditIndex = jsonUsers.findIndex(user => user.userId === id);
+    let jsonUsers;
+    try {
+      jsonUsers = JSON.parse(data);
+    } catch (parseError) {
+      console.error("Error parsing user data:", parseError);
+      return res.status(500).json({ error: "Error parsing user data" });
+    }
 
+    const userToEditIndex = jsonUsers.findIndex(user => user.userId === id);
     if (userToEditIndex === -1) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    jsonUsers[userToEditIndex] = {
-      ...jsonUsers[userToEditIndex],
-      ...userInfo,
-    };
+    // Verificar si el correo electrónico ya está registrado
+    const emailExists = jsonUsers.some(
+      user => user.email === userInfo.email && user.userId !== id
+    );
+    if (emailExists) {
+      return res.status(409).json({ error: "Este correo ya está registrado" });
+    }
 
-    fs.writeFile(usersFile, JSON.stringify(jsonUsers), error => {
-      if (error) {
+    jsonUsers[userToEditIndex] = { ...jsonUsers[userToEditIndex], ...userInfo };
+
+    // Guardar los cambios en el archivo
+    fs.writeFile(usersFile, JSON.stringify(jsonUsers, null, 2), writeError => {
+      if (writeError) {
+        console.error("Error writing user file:", writeError);
         return res.status(500).json({ error: "Error writing user file" });
       }
 

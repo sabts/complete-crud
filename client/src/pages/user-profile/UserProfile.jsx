@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { StyledDiv, StyledMainContainer, StyledPicture } from './styled-user-profile';
 import { useEffect, useState } from 'react';
 import { getDataById, updateDataById } from '../../lib/utils/api';
@@ -8,11 +8,26 @@ const UserProfile = () => {
 	const { id } = useParams();
 	const [user, setUser] = useState([]);
 	const [isEditing, setIsEditing] = useState(false);
-	const { handleSubmit } = useForm();
+	const {register, handleSubmit } = useForm();
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		getDataUser(setUser, id);
-	}, []);
+	}, [id]);
+
+	if(!user) {
+		return <h2>No User</h2>
+	}
+	const {
+		active, 
+		profilePicture, 
+		fullName, 
+		email, 
+		username, 
+		dateOfBirth, 
+		gender, 
+		phoneNumber}= user;
+		
 	return (
 		<StyledMainContainer>
 			<Link to='/'>
@@ -36,7 +51,7 @@ const UserProfile = () => {
 					</>
 				) : (
 					<>
-					<form onSubmit={(e) => updateUserData(id, e, setUser, setIsEditing)}>
+				<form onSubmit={handleSubmit(onSubmit)}>
 						<img src={user.profilePicture} alt='profile picture' />
 						<div>
 							<label htmlFor='active'>Active</label>
@@ -68,23 +83,21 @@ const UserProfile = () => {
 	);
 }
 
-const getDataUser = async (setUser, isEditing, id) => {
-	const user = await getDataById(isEditing, id);
+const getDataUser = async (setUser, id) => {
+	const user = await getDataById(id);
 	setUser(user);
 };
 
-const updateUserData = async (id, event, setUser, setIsEditing) => {
-	event.preventDefault();
+const updateUserData = async (id, data, setUser, setIsEditing) => {
 	const body = {
-		fullName: formInfo.fullName.value,
-		email: formInfo.email.value,
-		dateOfBirth: formInfo.dateOfBirth.value,
-		phoneNumber: formInfo.phoneNumber.value,
-		active: formInfo.active.checked
+		fullName: data.fullName,
+		email: data.email,
+		dateOfBirth: data.dateOfBirth,
+		phoneNumber: data.phoneNumber,
+		active: data.active,
 	};
 	const updatedUser = await updateDataById(id, body);
-	setUser( updatedUser)
+	setUser(updatedUser);
 	setIsEditing(false);
 };
-
 export default UserProfile;
