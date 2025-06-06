@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAllData } from '../../lib/utils/api';
 import UserCard from '../../components/user-card/userCard';
 import { Link } from 'react-router';
+import { StyledMainContainer } from './styled-home';
 
 const Home = () => {
 	const [users, setUsers] = useState([]);
@@ -10,6 +11,7 @@ const Home = () => {
 		getAllUsers(setUsers);
 	}, []);
 	return (
+		<StyledMainContainer>
 		<div>
 			{users.map(user => (
 				<Link key={user.userId} to={`users/${user.userId}`}>
@@ -23,6 +25,7 @@ const Home = () => {
 				</Link>
 			))}
 		</div>
+		</StyledMainContainer>
 	);
 };
 export default Home;

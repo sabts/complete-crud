@@ -9,6 +9,7 @@ const StyledDiv = styled.div`
 	border-radius: 24px;
 	padding: 1rem;
 	gap: 1rem;
+	margin-bottom: 1.5rem;
 `;
 
 const StyledPicture = styled.img`
@@ -18,8 +19,11 @@ const StyledPicture = styled.img`
 `;
 
 const StyledStatus = styled.div`
+	display: flex;
+	justify-content: center;
 	color: ${props => (props.$active ? 'green' : 'red')};
 	position: relative;
+	width: 70px;
 
 	&::before {
 		content: '';
@@ -27,10 +31,18 @@ const StyledStatus = styled.div`
 		height: 15px;
 		width: 15px;
 		border-radius: 50%;
-		left: -15px;
+		left: -10px;
 		top: 10%;
 		background-color: ${props => (props.$active ? 'green' : 'red')};
 	}
 `;
 
-export { StyledDiv, StyledPicture, StyledStatus };
+const StyledButton = styled.button`
+	background-color: white;
+	border: 2px solid #6ba4c8;
+	color: #6ba4c8;
+	padding: 0.5rem;
+	border-radius: 8px;
+`;
+
+export { StyledDiv, StyledPicture, StyledStatus, StyledButton };

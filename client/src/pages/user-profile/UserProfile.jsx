@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router';
-import { StyledDiv, StyledPicture } from './styled-user-profile';
+import { StyledDiv, StyledMainContainer, StyledPicture } from './styled-user-profile';
 import { useEffect, useState } from 'react';
 import { getDataById, updateDataById } from '../../lib/utils/api';
 import { useForm } from 'react-hook-form';
@@ -8,13 +8,13 @@ const UserProfile = () => {
 	const { id } = useParams();
 	const [user, setUser] = useState([]);
 	const [isEditing, setIsEditing] = useState(false);
-	const { register, handleSubmit } = useForm();
+	const { handleSubmit } = useForm();
 
 	useEffect(() => {
 		getDataUser(setUser, id);
 	}, []);
 	return (
-		<>
+		<StyledMainContainer>
 			<Link to='/'>
 				<button>back to users</button>
 			</Link>
@@ -29,11 +29,14 @@ const UserProfile = () => {
 						<span>Gender: {user.gender}</span>
 						<span>Date of Birth: {user.dateOfBirth}</span>
 						<span>Phone Number: {user.phoneNumber}</span>
+						<div>
 						<button onClick={() => setIsEditing(true)}>EDIT</button>
+						<button>DELETE</button>
+						</div>
 					</>
 				) : (
 					<>
-					<form onSubmit={handleSubmit(onSubmit)}>
+					<form onSubmit={(e) => updateUserData(id, e, setUser, setIsEditing)}>
 						<img src={user.profilePicture} alt='profile picture' />
 						<div>
 							<label htmlFor='active'>Active</label>
@@ -61,7 +64,7 @@ const UserProfile = () => {
 						</>
 				)}
 			</StyledDiv>
-		</>
+			</StyledMainContainer>
 	);
 }
 
@@ -70,15 +73,18 @@ const getDataUser = async (setUser, isEditing, id) => {
 	setUser(user);
 };
 
-const updateUserData = async (setIsEditing, id, updatedFields) => {
-	const updatedUser = await updateDataById(id, updatedFields);
+const updateUserData = async (id, event, setUser, setIsEditing) => {
+	event.preventDefault();
+	const body = {
+		fullName: formInfo.fullName.value,
+		email: formInfo.email.value,
+		dateOfBirth: formInfo.dateOfBirth.value,
+		phoneNumber: formInfo.phoneNumber.value,
+		active: formInfo.active.checked
+	};
+	const updatedUser = await updateDataById(id, body);
+	setUser( updatedUser)
 	setIsEditing(false);
-	return updatedUser;
-};
-
-const onSubmit = async (setIsEditing, id ) => {
-	const updated = await updateUserData(setIsEditing, id,);
-	setUser(updated);
 };
 
 export default UserProfile;

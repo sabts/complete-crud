@@ -6,11 +6,12 @@ import UserProfile from '../pages/user-profile/UserProfile';
 const Router = () => {
 	return (
 		<>
-			<Routes>
-				<Route path='/' element={<Layout />} />
-				<Route index element={<Home />} />
-				<Route path='/users/:id' element={<UserProfile />} />
-			</Routes>
+	<Routes>
+	<Route path='/' element={<Layout />}>
+		<Route index element={<Home />} />
+		<Route path='users/:id' element={<UserProfile />} />
+	</Route>
+</Routes>
 		</>
 	);
 };

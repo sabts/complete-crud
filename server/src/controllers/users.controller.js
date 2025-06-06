@@ -36,36 +36,36 @@ usersController.getDataById = async (req, res) => {
 
 usersController.updateDataById = async (req, res) => {
   const { id } = req.params;
-  const updatedFields = req.body;
+  const userInfo = req.body;
 
-  try {
-    const userList = await fs.readFile(userFilePath);
-    const data = JSON.parse(userList);
+  fs.readFile(usersFile, (error, data) => {
+    if (error)
+      return res.status(500).json({ error: "Error reading user file" });
 
-    const userExist = data.find(user => user.userId === id);
-    if (!userExist) {
-      return res.status(404).send("Usuario no encontrado");
+    if (!id || !userInfo) {
+      return res.status(400).json({ error: "Bad Request: No ID or INFO" });
     }
-    const updateData = data.map(user => {
-      if (user.userId === id)
-        return {
-          ...user,
-          ...updatedFields,
-        };
+
+    const jsonUsers = JSON.parse(data);
+    const userToEditIndex = jsonUsers.findIndex(user => user.userId === id);
+
+    if (userToEditIndex === -1) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    jsonUsers[userToEditIndex] = {
+      ...jsonUsers[userToEditIndex],
+      ...userInfo,
+    };
+
+    fs.writeFile(usersFile, JSON.stringify(jsonUsers), error => {
+      if (error) {
+        return res.status(500).json({ error: "Error writing user file" });
+      }
+
+      return res.status(200).json(jsonUsers[userToEditIndex]);
     });
-
-    const emailExists = data.some(user => user.email === req.body.email);
-    if (emailExists) {
-      return res.status(409).send("Este correo ya está registrado");
-    }
-
-    await fs.writeFile(userFilePath, JSON.stringify(data));
-
-    res.json(userExist);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al actualizar el usuario");
-  }
+  });
 };
 
 usersController.deleteDataById = async (req, res) => {

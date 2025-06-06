@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+const StyledMainContainer = styled.section`
+	display: flex;
+	flex-direction: column;
+	padding: 2rem;
+`;
+
 const StyledDiv = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -7,9 +13,10 @@ const StyledDiv = styled.div`
 `;
 
 const StyledPicture = styled.img`
-	height: 230px;
-	width: 230px;
+	height: 200px;
+	width: 200px;
+	align-self: center;
 	border-radius: 50%;
 `;
 
-export { StyledDiv, StyledPicture };
+export { StyledMainContainer, StyledDiv, StyledPicture };
