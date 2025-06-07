@@ -47,20 +47,13 @@ usersController.updateDataById = async (req, res) => {
       return res.status(400).json({ error: "Bad Request: No ID or INFO" });
     }
 
-    let jsonUsers;
-    try {
-      jsonUsers = JSON.parse(data);
-    } catch (parseError) {
-      console.error("Error parsing user data:", parseError);
-      return res.status(500).json({ error: "Error parsing user data" });
-    }
-
+    const jsonUsers = JSON.parse(data);
     const userToEditIndex = jsonUsers.findIndex(user => user.userId === id);
+
     if (userToEditIndex === -1) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Verificar si el correo electrónico ya está registrado
     const emailExists = jsonUsers.some(
       user => user.email === userInfo.email && user.userId !== id
     );
@@ -70,13 +63,9 @@ usersController.updateDataById = async (req, res) => {
 
     jsonUsers[userToEditIndex] = { ...jsonUsers[userToEditIndex], ...userInfo };
 
-    // Guardar los cambios en el archivo
-    fs.writeFile(usersFile, JSON.stringify(jsonUsers, null, 2), writeError => {
-      if (writeError) {
-        console.error("Error writing user file:", writeError);
+    fs.writeFile(usersFile, JSON.stringify(jsonUsers), error => {
+      if (error)
         return res.status(500).json({ error: "Error writing user file" });
-      }
-
       return res.status(200).json(jsonUsers[userToEditIndex]);
     });
   });
@@ -84,25 +73,20 @@ usersController.updateDataById = async (req, res) => {
 
 usersController.deleteDataById = async (req, res) => {
   const { id } = req.params;
-  const updatedFields = req.body;
+  fs.readFile(usersFile, (err, data) => {
+    if (err) return res.status(500).json({ error: "Error reading user file " });
+    if (id) {
+      const usersUpdated = JSON.parse(data).filter(user => user.userId !== id);
 
-  try {
-    const userList = await fs.readFile(userFilePath);
-    const data = JSON.parse(userList);
-
-    const userExist = data.find(user => user.userId === id);
-    if (!userExist) {
-      return res.status(404).send("Usuario no encontrado");
+      fs.writeFile(usersFile, JSON.stringify(usersUpdated), error => {
+        if (error)
+          return res.status(500).json({ error: "Error writing user file" });
+        return res.status(200).json({ message: "User deleted" });
+      });
+    } else {
+      return res.status(400).json({ error: "Bad Request: No ID" });
     }
-
-    const deleteUser = data.filter(user => user.userId !== id);
-    await fs.writeFile(userFilePath, JSON.stringify(deleteUser));
-
-    res.send("Usuario eliminado");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error al eliminar el usuario");
-  }
+  });
 };
 
 module.exports = usersController;
